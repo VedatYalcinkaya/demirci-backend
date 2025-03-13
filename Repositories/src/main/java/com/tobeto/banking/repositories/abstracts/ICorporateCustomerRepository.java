@@ -61,4 +61,26 @@ public interface ICorporateCustomerRepository extends IRepository<CorporateCusto
      * @return Aktif müşteri listesi
      */
     List<CorporateCustomer> findByIsActiveTrue();
+    
+    /**
+     * Şirket adına göre kurumsal müşteri arar
+     * @param keyword Arama kelimesi
+     * @return Bulunan müşteri listesi
+     */
+    List<CorporateCustomer> searchByCompanyName(String keyword);
+    
+    /**
+     * Kuruluş yılına göre kurumsal müşteri arar
+     * @param year Kuruluş yılı
+     * @return Bulunan müşteri listesi
+     */
+    List<CorporateCustomer> findByFoundationYearGreaterThanEqual(int year);
+    
+    /**
+     * Sektöre ve çalışan sayısına göre kurumsal müşteri arar
+     * @param sector Sektör
+     * @param minEmployeeCount Minimum çalışan sayısı
+     * @return Bulunan müşteri listesi
+     */
+    List<CorporateCustomer> findBySectorAndMinEmployeeCount(String sector, int minEmployeeCount);
 } 

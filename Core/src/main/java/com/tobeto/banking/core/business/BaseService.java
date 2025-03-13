@@ -2,7 +2,7 @@ package com.tobeto.banking.core.business;
 
 import com.tobeto.banking.core.data.IRepository;
 import com.tobeto.banking.core.entities.IEntity;
-import com.tobeto.banking.core.exceptions.BusinessException;
+import com.tobeto.banking.core.crosscuttingconcerns.exceptions.types.BusinessException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.tobeto.banking.business.abstracts;
 
+import com.tobeto.banking.business.dtos.responses.CustomerResponse;
 import com.tobeto.banking.core.business.IService;
 import com.tobeto.banking.entities.concretes.Customer;
-import com.tobeto.banking.entities.dtos.CustomerDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,12 +23,12 @@ public interface CustomerService extends IService<Customer, Long> {
      * Tüm müşterileri DTO olarak döner
      * @return Müşteri DTO listesi
      */
-    List<CustomerDto> getAllDto();
+    List<CustomerResponse> getAllDto();
     
     /**
      * ID'ye göre müşteriyi DTO olarak döner
      * @param id Müşteri ID
      * @return Müşteri DTO
      */
-    CustomerDto getDtoById(Long id);
+    CustomerResponse getDtoById(Long id);
 } 

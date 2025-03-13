@@ -1,8 +1,10 @@
 package com.tobeto.banking.business.abstracts;
 
+import com.tobeto.banking.business.dtos.requests.CreateIndividualCustomerRequest;
+import com.tobeto.banking.business.dtos.requests.UpdateIndividualCustomerRequest;
+import com.tobeto.banking.business.dtos.responses.IndividualCustomerResponse;
 import com.tobeto.banking.core.business.IService;
 import com.tobeto.banking.entities.concretes.IndividualCustomer;
-import com.tobeto.banking.entities.dtos.IndividualCustomerDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,26 +55,26 @@ public interface IndividualCustomerService extends IService<IndividualCustomer, 
      * Tüm bireysel müşterileri DTO olarak döner
      * @return Bireysel müşteri DTO listesi
      */
-    List<IndividualCustomerDto> getAllDto();
+    List<IndividualCustomerResponse> getAllDto();
     
     /**
      * ID'ye göre bireysel müşteriyi DTO olarak döner
      * @param id Müşteri ID
      * @return Bireysel müşteri DTO
      */
-    IndividualCustomerDto getDtoById(Long id);
+    IndividualCustomerResponse getDtoById(Long id);
     
     /**
      * Bireysel müşteri ekler
-     * @param customerDto Eklenecek müşteri DTO
-     * @return Eklenen müşteri DTO
+     * @param request Eklenecek müşteri isteği
+     * @return Eklenen müşteri yanıtı
      */
-    IndividualCustomerDto addDto(IndividualCustomerDto customerDto);
+    IndividualCustomerResponse addDto(CreateIndividualCustomerRequest request);
     
     /**
      * Bireysel müşteri günceller
-     * @param customerDto Güncellenecek müşteri DTO
-     * @return Güncellenen müşteri DTO
+     * @param request Güncellenecek müşteri isteği
+     * @return Güncellenen müşteri yanıtı
      */
-    IndividualCustomerDto updateDto(IndividualCustomerDto customerDto);
+    IndividualCustomerResponse updateDto(UpdateIndividualCustomerRequest request);
 } 

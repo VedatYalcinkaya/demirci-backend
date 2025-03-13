@@ -1,8 +1,9 @@
 package com.tobeto.banking.business.abstracts;
 
-import com.tobeto.banking.core.business.IService;
+import com.tobeto.banking.business.dtos.requests.CreateCorporateCustomerRequest;
+import com.tobeto.banking.business.dtos.requests.UpdateCorporateCustomerRequest;
+import com.tobeto.banking.business.dtos.responses.CorporateCustomerResponse;
 import com.tobeto.banking.entities.concretes.CorporateCustomer;
-import com.tobeto.banking.entities.dtos.CorporateCustomerDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,90 +11,90 @@ import java.util.Optional;
 /**
  * Kurumsal müşteri servisi arayüzü
  */
-public interface CorporateCustomerService extends IService<CorporateCustomer, Long> {
+public interface CorporateCustomerService {
     
     /**
-     * Vergi numarasına göre kurumsal müşteri arar
+     * Vergi numarasına göre kurumsal müşteri bulur
      * @param taxNumber Vergi numarası
-     * @return Bulunan müşteri veya boş Optional
+     * @return Kurumsal müşteri
      */
     Optional<CorporateCustomer> findByTaxNumber(String taxNumber);
     
     /**
-     * Şirket adına göre kurumsal müşteri arar
+     * Şirket adına göre kurumsal müşteri bulur
      * @param companyName Şirket adı
-     * @return Bulunan müşteri veya boş Optional
+     * @return Kurumsal müşteri
      */
     Optional<CorporateCustomer> findByCompanyName(String companyName);
     
     /**
-     * E-posta adresine göre kurumsal müşteri arar
+     * E-posta adresine göre kurumsal müşteri bulur
      * @param email E-posta adresi
-     * @return Bulunan müşteri veya boş Optional
+     * @return Kurumsal müşteri
      */
     Optional<CorporateCustomer> findByEmail(String email);
     
     /**
-     * Sektöre göre kurumsal müşteri listesi döner
+     * Sektöre göre kurumsal müşterileri bulur
      * @param sector Sektör
-     * @return Bulunan müşteri listesi
+     * @return Kurumsal müşteri listesi
      */
     List<CorporateCustomer> findBySector(String sector);
     
     /**
-     * Çalışan sayısına göre kurumsal müşteri listesi döner
+     * Çalışan sayısı aralığına göre kurumsal müşterileri bulur
      * @param minCount Minimum çalışan sayısı
      * @param maxCount Maksimum çalışan sayısı
-     * @return Bulunan müşteri listesi
+     * @return Kurumsal müşteri listesi
      */
     List<CorporateCustomer> findByEmployeeCountBetween(int minCount, int maxCount);
     
     /**
-     * Şirket adına göre kurumsal müşteri arar (LIKE sorgusu)
-     * @param keyword Aranacak kelime
-     * @return Bulunan müşteri listesi
+     * Şirket adına göre kurumsal müşterileri arar
+     * @param keyword Arama kelimesi
+     * @return Kurumsal müşteri listesi
      */
     List<CorporateCustomer> searchByCompanyName(String keyword);
     
     /**
-     * Belirli bir kuruluş yılından sonra kurulmuş şirketleri listeler
+     * Belirli bir yıldan sonra kurulmuş kurumsal müşterileri bulur
      * @param year Kuruluş yılı
-     * @return Bulunan müşteri listesi
+     * @return Kurumsal müşteri listesi
      */
     List<CorporateCustomer> findByFoundationYearGreaterThanEqual(int year);
     
     /**
-     * Belirli bir sektördeki ve minimum çalışan sayısına sahip şirketleri listeler
+     * Sektör ve minimum çalışan sayısına göre kurumsal müşterileri bulur
      * @param sector Sektör
      * @param minEmployeeCount Minimum çalışan sayısı
-     * @return Bulunan müşteri listesi
+     * @return Kurumsal müşteri listesi
      */
     List<CorporateCustomer> findBySectorAndMinEmployeeCount(String sector, int minEmployeeCount);
     
     /**
-     * Tüm kurumsal müşterileri DTO olarak döner
+     * Tüm kurumsal müşterileri DTO olarak getirir
      * @return Kurumsal müşteri DTO listesi
      */
-    List<CorporateCustomerDto> getAllDto();
+    List<CorporateCustomerResponse> getAllDto();
     
     /**
-     * ID'ye göre kurumsal müşteriyi DTO olarak döner
-     * @param id Müşteri ID
+     * ID'ye göre kurumsal müşteri DTO'sunu getirir
+     * @param id Kurumsal müşteri ID
      * @return Kurumsal müşteri DTO
      */
-    CorporateCustomerDto getDtoById(Long id);
+    CorporateCustomerResponse getDtoById(Long id);
     
     /**
-     * Kurumsal müşteri ekler
-     * @param customerDto Eklenecek müşteri DTO
-     * @return Eklenen müşteri DTO
+     * Yeni kurumsal müşteri ekler
+     * @param request Kurumsal müşteri ekleme isteği
+     * @return Eklenen kurumsal müşteri DTO
      */
-    CorporateCustomerDto addDto(CorporateCustomerDto customerDto);
+    CorporateCustomerResponse addDto(CreateCorporateCustomerRequest request);
     
     /**
-     * Kurumsal müşteri günceller
-     * @param customerDto Güncellenecek müşteri DTO
-     * @return Güncellenen müşteri DTO
+     * Kurumsal müşteri bilgilerini günceller
+     * @param request Kurumsal müşteri güncelleme isteği
+     * @return Güncellenen kurumsal müşteri DTO
      */
-    CorporateCustomerDto updateDto(CorporateCustomerDto customerDto);
+    CorporateCustomerResponse updateDto(UpdateCorporateCustomerRequest request);
 } 

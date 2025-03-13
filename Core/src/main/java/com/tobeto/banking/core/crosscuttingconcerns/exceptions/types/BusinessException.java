@@ -1,4 +1,4 @@
-package com.tobeto.banking.core.exceptions;
+package com.tobeto.banking.core.crosscuttingconcerns.exceptions.types;
 
 /**
  * İş kuralı ihlallerinde fırlatılan exception
