@@ -2,7 +2,7 @@ package com.tobeto.banking.business.rules;
 
 import com.tobeto.banking.business.constants.CustomerMessages;
 import com.tobeto.banking.core.crosscuttingconcerns.exceptions.types.BusinessException;
-import com.tobeto.banking.repositories.abstracts.ICorporateCustomerRepository;
+import com.tobeto.banking.repositories.abstracts.CorporateCustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class CorporateCustomerBusinessRules {
     
-    private final ICorporateCustomerRepository repository;
+    private final CorporateCustomerRepository repository;
     private final CustomerBusinessRules customerBusinessRules;
     
     /**
@@ -62,14 +62,10 @@ public class CorporateCustomerBusinessRules {
      */
     public void validateCorporateCustomer(String email, String phoneNumber, String taxNumber, String companyName, int foundationYear) {
         // E-posta kontrolü
-        if (email == null || email.isBlank() || !email.contains("@")) {
-            throw new BusinessException(CustomerMessages.INVALID_EMAIL);
-        }
+        customerBusinessRules.checkIfEmailValid(email);
         
         // Telefon numarası kontrolü
-        if (phoneNumber == null || phoneNumber.isBlank() || phoneNumber.length() < 10) {
-            throw new BusinessException(CustomerMessages.INVALID_PHONE_NUMBER);
-        }
+        customerBusinessRules.checkIfPhoneNumberValid(phoneNumber);
         
         // Vergi numarası kontrolü
         if (taxNumber == null || taxNumber.isBlank() || taxNumber.length() != 10) {

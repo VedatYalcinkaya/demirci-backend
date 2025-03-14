@@ -10,7 +10,7 @@ import java.util.Optional;
  * Customer entity'si için repository arayüzü
  */
 @Repository
-public interface ICustomerRepository extends IRepository<Customer, Long> {
+public interface CustomerRepository extends IRepository<Customer, Long> {
     
     /**
      * E-posta adresine göre müşteri arar

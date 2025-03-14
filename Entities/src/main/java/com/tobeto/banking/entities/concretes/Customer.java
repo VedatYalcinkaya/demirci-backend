@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Müşteri temel sınıfı
@@ -32,4 +33,10 @@ public abstract class Customer extends BaseEntity<Long> {
     
     @Column(name = "address", length = 255)
     private String address;
+    
+    @OneToMany(mappedBy = "customer")
+    private List<CreditApplication> creditApplications;
+    
+    @OneToMany(mappedBy = "customer")
+    private List<CreditScore> creditScores;
 } 

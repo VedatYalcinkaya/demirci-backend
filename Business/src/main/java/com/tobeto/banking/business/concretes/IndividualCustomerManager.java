@@ -5,12 +5,17 @@ import com.tobeto.banking.business.constants.CustomerMessages;
 import com.tobeto.banking.business.dtos.requests.CreateIndividualCustomerRequest;
 import com.tobeto.banking.business.dtos.requests.UpdateIndividualCustomerRequest;
 import com.tobeto.banking.business.dtos.responses.IndividualCustomerResponse;
+import com.tobeto.banking.business.dtos.responses.PagedResponse;
 import com.tobeto.banking.business.mappings.IndividualCustomerMapper;
 import com.tobeto.banking.business.rules.IndividualCustomerBusinessRules;
 import com.tobeto.banking.core.business.BaseService;
-import com.tobeto.banking.core.exceptions.BusinessException;
+import com.tobeto.banking.core.crosscuttingconcerns.exceptions.types.BusinessException;
 import com.tobeto.banking.entities.concretes.IndividualCustomer;
-import com.tobeto.banking.repositories.abstracts.IIndividualCustomerRepository;
+import com.tobeto.banking.repositories.abstracts.IndividualCustomerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +26,12 @@ import java.util.Optional;
  * Bireysel müşteri servisi implementasyonu
  */
 @Service
-public class IndividualCustomerManager extends BaseService<IndividualCustomer, IIndividualCustomerRepository, Long> implements IndividualCustomerService {
+public class IndividualCustomerManager extends BaseService<IndividualCustomer, IndividualCustomerRepository, Long> implements IndividualCustomerService {
     
     private final IndividualCustomerBusinessRules rules;
     private final IndividualCustomerMapper mapper;
     
-    public IndividualCustomerManager(IIndividualCustomerRepository repository, IndividualCustomerBusinessRules rules, IndividualCustomerMapper mapper) {
+    public IndividualCustomerManager(IndividualCustomerRepository repository, IndividualCustomerBusinessRules rules, IndividualCustomerMapper mapper) {
         super(repository);
         this.rules = rules;
         this.mapper = mapper;
@@ -48,19 +53,42 @@ public class IndividualCustomerManager extends BaseService<IndividualCustomer, I
     }
     
     @Override
-    public List<IndividualCustomer> findByAgeBetween(int minAge, int maxAge) {
-        return repository.findByAgeBetween(minAge, maxAge);
-    }
-    
-    @Override
-    public List<IndividualCustomer> searchByName(String keyword) {
-        return repository.searchByName(keyword);
-    }
-    
-    @Override
     public List<IndividualCustomerResponse> getAllDto() {
         List<IndividualCustomer> customers = repository.findAll();
         return mapper.toResponseList(customers);
+    }
+    
+    @Override
+    public PagedResponse<IndividualCustomerResponse> getAllPaged(int pageNo, int pageSize, String sortBy, String sortDir) {
+        // Sıralama yönünü belirle
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? 
+                Sort.by(sortBy).ascending() : 
+                Sort.by(sortBy).descending();
+        
+        // Sayfalama nesnesi oluştur
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        
+        // Veritabanından sayfalanmış veriyi al
+        Page<IndividualCustomer> customerPage = repository.findAll(pageable);
+        
+        // Entity'leri DTO'lara dönüştür
+        List<IndividualCustomerResponse> content = mapper.toResponseList(customerPage.getContent());
+        
+        // Sayfalama yanıtını oluştur
+        PagedResponse<IndividualCustomerResponse> pagedResponse = new PagedResponse<>();
+        pagedResponse.setContent(content);
+        pagedResponse.setPageNo(customerPage.getNumber());
+        pagedResponse.setPageSize(customerPage.getSize());
+        pagedResponse.setTotalElements(customerPage.getTotalElements());
+        pagedResponse.setTotalPages(customerPage.getTotalPages());
+        pagedResponse.setLast(customerPage.isLast());
+        pagedResponse.setFirst(customerPage.isFirst());
+        pagedResponse.setEmpty(customerPage.isEmpty());
+        pagedResponse.setNumberOfElements(customerPage.getNumberOfElements());
+        pagedResponse.setHasNext(customerPage.hasNext());
+        pagedResponse.setHasPrevious(customerPage.hasPrevious());
+        
+        return pagedResponse;
     }
     
     @Override

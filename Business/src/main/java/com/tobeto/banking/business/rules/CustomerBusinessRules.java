@@ -2,7 +2,7 @@ package com.tobeto.banking.business.rules;
 
 import com.tobeto.banking.business.constants.CustomerMessages;
 import com.tobeto.banking.core.crosscuttingconcerns.exceptions.types.BusinessException;
-import com.tobeto.banking.repositories.abstracts.ICustomerRepository;
+import com.tobeto.banking.repositories.abstracts.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomerBusinessRules {
     
-    private final ICustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
     
     /**
      * Müşteri ID'sinin varlığını kontrol eder
@@ -42,7 +42,7 @@ public class CustomerBusinessRules {
     public void checkIfEmailValid(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         if (email == null || !email.matches(emailRegex)) {
-            throw new BusinessException("Geçersiz e-posta adresi");
+            throw new BusinessException(CustomerMessages.INVALID_EMAIL);
         }
     }
     
@@ -53,7 +53,7 @@ public class CustomerBusinessRules {
     public void checkIfPhoneNumberValid(String phoneNumber) {
         String phoneRegex = "^[0-9]{10,15}$";
         if (phoneNumber == null || !phoneNumber.matches(phoneRegex)) {
-            throw new BusinessException("Geçersiz telefon numarası");
+            throw new BusinessException(CustomerMessages.INVALID_PHONE_NUMBER);
         }
     }
 } 

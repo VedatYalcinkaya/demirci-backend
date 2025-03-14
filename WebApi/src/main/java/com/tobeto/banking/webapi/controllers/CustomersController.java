@@ -1,37 +1,98 @@
 package com.tobeto.banking.webapi.controllers;
 
-import com.tobeto.banking.business.abstracts.CorporateCustomerService;
 import com.tobeto.banking.business.abstracts.CustomerService;
-import com.tobeto.banking.business.abstracts.IndividualCustomerService;
-import com.tobeto.banking.entities.dtos.CorporateCustomerDto;
-import com.tobeto.banking.entities.dtos.CustomerDto;
-import com.tobeto.banking.entities.dtos.IndividualCustomerDto;
+import com.tobeto.banking.business.dtos.responses.CustomerResponse;
+import com.tobeto.banking.business.dtos.responses.PagedResponse;
+import com.tobeto.banking.entities.concretes.Customer;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Müşteri işlemleri için REST API controller
+ * Tüm müşteri işlemleri için controller sınıfı
  */
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
+@Tag(name = "Müşteriler", description = "Tüm müşteri işlemleri için API")
 public class CustomersController {
     
     private final CustomerService customerService;
-    private final IndividualCustomerService individualCustomerService;
-    private final CorporateCustomerService corporateCustomerService;
     
     /**
      * Tüm müşterileri listeler
      * @return Müşteri listesi
      */
     @GetMapping
-    public ResponseEntity<List<CustomerDto>> getAllCustomers() {
-        return ResponseEntity.ok(customerService.getAllDto());
+    @Operation(summary = "Tüm müşterileri listeler", description = "Sistemdeki tüm müşterileri (bireysel ve kurumsal) DTO formatında döner")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Müşteriler başarıyla listelendi"),
+            @ApiResponse(responseCode = "500", description = "Sunucu hatası")
+    })
+    public ResponseEntity<List<CustomerResponse>> getAll() {
+        List<CustomerResponse> customers = customerService.getAllDto();
+        return ResponseEntity.ok(customers);
+    }
+    
+    /**
+     * Sayfalanmış müşteri listesi döner
+     * @param pageNo Sayfa numarası (0 tabanlı)
+     * @param pageSize Sayfa başına öğe sayısı
+     * @param sortBy Sıralama alanı
+     * @param sortDir Sıralama yönü (asc/desc)
+     * @return Sayfalanmış müşteri listesi
+     */
+    @GetMapping("/paged")
+    @Operation(
+        summary = "Sayfalanmış müşteri listesi döner", 
+        description = "Sistemdeki tüm müşterileri (bireysel ve kurumsal) sayfalanmış şekilde DTO formatında döner. " +
+                "Sayfa numarası 0'dan başlar. Sıralama alanı olarak herhangi bir entity alanı kullanılabilir. " +
+                "Sıralama yönü olarak 'asc' (artan) veya 'desc' (azalan) kullanılabilir."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Müşteriler başarıyla listelendi"),
+            @ApiResponse(responseCode = "400", description = "Geçersiz sayfalama parametreleri"),
+            @ApiResponse(responseCode = "500", description = "Sunucu hatası")
+    })
+    public ResponseEntity<PagedResponse<CustomerResponse>> getAllPaged(
+            @Parameter(description = "Sayfa numarası (0 tabanlı)", example = "0")
+            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            
+            @Parameter(description = "Sayfa başına öğe sayısı", example = "10")
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+            
+            @Parameter(description = "Sıralama alanı", example = "id")
+            @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+            
+            @Parameter(description = "Sıralama yönü (asc/desc)", example = "asc")
+            @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir) {
+        
+        // Sayfa numarası ve boyutu için validasyon
+        if (pageNo < 0) {
+            pageNo = 0;
+        }
+        
+        if (pageSize < 1 || pageSize > 100) {
+            pageSize = 10;
+        }
+        
+        // Sıralama yönü için validasyon
+        if (!sortDir.equalsIgnoreCase("asc") && !sortDir.equalsIgnoreCase("desc")) {
+            sortDir = "asc";
+        }
+        
+        PagedResponse<CustomerResponse> response = 
+                customerService.getAllPaged(pageNo, pageSize, sortBy, sortDir);
+        
+        return ResponseEntity.ok(response);
     }
     
     /**
@@ -40,111 +101,36 @@ public class CustomersController {
      * @return Müşteri
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Long id) {
-        return ResponseEntity.ok(customerService.getDtoById(id));
+    @Operation(summary = "ID'ye göre müşteri getirir", description = "Belirtilen ID'ye sahip müşteriyi DTO formatında döner")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Müşteri başarıyla bulundu"),
+            @ApiResponse(responseCode = "404", description = "Müşteri bulunamadı"),
+            @ApiResponse(responseCode = "500", description = "Sunucu hatası")
+    })
+    public ResponseEntity<CustomerResponse> getById(
+            @Parameter(description = "Müşteri ID", required = true)
+            @PathVariable Long id) {
+        CustomerResponse customer = customerService.getDtoById(id);
+        return ResponseEntity.ok(customer);
     }
     
     /**
-     * Tüm bireysel müşterileri listeler
-     * @return Bireysel müşteri listesi
+     * E-posta adresine göre müşteri getirir
+     * @param email E-posta adresi
+     * @return Müşteri
      */
-    @GetMapping("/individual")
-    public ResponseEntity<List<IndividualCustomerDto>> getAllIndividualCustomers() {
-        return ResponseEntity.ok(individualCustomerService.getAllDto());
-    }
-    
-    /**
-     * ID'ye göre bireysel müşteri getirir
-     * @param id Müşteri ID
-     * @return Bireysel müşteri
-     */
-    @GetMapping("/individual/{id}")
-    public ResponseEntity<IndividualCustomerDto> getIndividualCustomerById(@PathVariable Long id) {
-        return ResponseEntity.ok(individualCustomerService.getDtoById(id));
-    }
-    
-    /**
-     * Yeni bireysel müşteri ekler
-     * @param customerDto Eklenecek müşteri
-     * @return Eklenen müşteri
-     */
-    @PostMapping("/individual")
-    public ResponseEntity<IndividualCustomerDto> addIndividualCustomer(@RequestBody IndividualCustomerDto customerDto) {
-        return new ResponseEntity<>(individualCustomerService.addDto(customerDto), HttpStatus.CREATED);
-    }
-    
-    /**
-     * Bireysel müşteri günceller
-     * @param id Müşteri ID
-     * @param customerDto Güncellenecek müşteri
-     * @return Güncellenen müşteri
-     */
-    @PutMapping("/individual/{id}")
-    public ResponseEntity<IndividualCustomerDto> updateIndividualCustomer(@PathVariable Long id, @RequestBody IndividualCustomerDto customerDto) {
-        customerDto.setId(id);
-        return ResponseEntity.ok(individualCustomerService.updateDto(customerDto));
-    }
-    
-    /**
-     * Bireysel müşteri siler
-     * @param id Müşteri ID
-     * @return Boş yanıt
-     */
-    @DeleteMapping("/individual/{id}")
-    public ResponseEntity<Void> deleteIndividualCustomer(@PathVariable Long id) {
-        individualCustomerService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-    
-    /**
-     * Tüm kurumsal müşterileri listeler
-     * @return Kurumsal müşteri listesi
-     */
-    @GetMapping("/corporate")
-    public ResponseEntity<List<CorporateCustomerDto>> getAllCorporateCustomers() {
-        return ResponseEntity.ok(corporateCustomerService.getAllDto());
-    }
-    
-    /**
-     * ID'ye göre kurumsal müşteri getirir
-     * @param id Müşteri ID
-     * @return Kurumsal müşteri
-     */
-    @GetMapping("/corporate/{id}")
-    public ResponseEntity<CorporateCustomerDto> getCorporateCustomerById(@PathVariable Long id) {
-        return ResponseEntity.ok(corporateCustomerService.getDtoById(id));
-    }
-    
-    /**
-     * Yeni kurumsal müşteri ekler
-     * @param customerDto Eklenecek müşteri
-     * @return Eklenen müşteri
-     */
-    @PostMapping("/corporate")
-    public ResponseEntity<CorporateCustomerDto> addCorporateCustomer(@RequestBody CorporateCustomerDto customerDto) {
-        return new ResponseEntity<>(corporateCustomerService.addDto(customerDto), HttpStatus.CREATED);
-    }
-    
-    /**
-     * Kurumsal müşteri günceller
-     * @param id Müşteri ID
-     * @param customerDto Güncellenecek müşteri
-     * @return Güncellenen müşteri
-     */
-    @PutMapping("/corporate/{id}")
-    public ResponseEntity<CorporateCustomerDto> updateCorporateCustomer(@PathVariable Long id, @RequestBody CorporateCustomerDto customerDto) {
-        customerDto.setId(id);
-        return ResponseEntity.ok(corporateCustomerService.updateDto(customerDto));
-    }
-    
-    /**
-     * Kurumsal müşteri siler
-     * @param id Müşteri ID
-     * @return Boş yanıt
-     */
-    @DeleteMapping("/corporate/{id}")
-    public ResponseEntity<Void> deleteCorporateCustomer(@PathVariable Long id) {
-        corporateCustomerService.delete(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/by-email/{email}")
+    @Operation(summary = "E-posta adresine göre müşteri getirir", description = "Belirtilen e-posta adresine sahip müşteriyi döner")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Müşteri başarıyla bulundu"),
+            @ApiResponse(responseCode = "404", description = "Müşteri bulunamadı"),
+            @ApiResponse(responseCode = "500", description = "Sunucu hatası")
+    })
+    public ResponseEntity<Customer> getByEmail(
+            @Parameter(description = "E-posta adresi", required = true)
+            @PathVariable String email) {
+        Optional<Customer> customer = customerService.findByEmail(email);
+        return customer.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 } 

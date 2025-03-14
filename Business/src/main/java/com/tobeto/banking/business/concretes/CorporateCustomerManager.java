@@ -5,12 +5,17 @@ import com.tobeto.banking.business.constants.CustomerMessages;
 import com.tobeto.banking.business.dtos.requests.CreateCorporateCustomerRequest;
 import com.tobeto.banking.business.dtos.requests.UpdateCorporateCustomerRequest;
 import com.tobeto.banking.business.dtos.responses.CorporateCustomerResponse;
+import com.tobeto.banking.business.dtos.responses.PagedResponse;
 import com.tobeto.banking.business.mappings.CorporateCustomerMapper;
 import com.tobeto.banking.business.rules.CorporateCustomerBusinessRules;
 import com.tobeto.banking.core.business.BaseService;
-import com.tobeto.banking.core.exceptions.BusinessException;
+import com.tobeto.banking.core.crosscuttingconcerns.exceptions.types.BusinessException;
 import com.tobeto.banking.entities.concretes.CorporateCustomer;
-import com.tobeto.banking.repositories.abstracts.ICorporateCustomerRepository;
+import com.tobeto.banking.repositories.abstracts.CorporateCustomerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +26,12 @@ import java.util.Optional;
  * Kurumsal müşteri servisi implementasyonu
  */
 @Service
-public class CorporateCustomerManager extends BaseService<CorporateCustomer, ICorporateCustomerRepository, Long> implements CorporateCustomerService {
+public class CorporateCustomerManager extends BaseService<CorporateCustomer, CorporateCustomerRepository, Long> implements CorporateCustomerService {
     
     private final CorporateCustomerBusinessRules rules;
     private final CorporateCustomerMapper mapper;
     
-    public CorporateCustomerManager(ICorporateCustomerRepository repository, CorporateCustomerBusinessRules rules, CorporateCustomerMapper mapper) {
+    public CorporateCustomerManager(CorporateCustomerRepository repository, CorporateCustomerBusinessRules rules, CorporateCustomerMapper mapper) {
         super(repository);
         this.rules = rules;
         this.mapper = mapper;
@@ -79,6 +84,39 @@ public class CorporateCustomerManager extends BaseService<CorporateCustomer, ICo
     }
     
     @Override
+    public PagedResponse<CorporateCustomerResponse> getAllPaged(int pageNo, int pageSize, String sortBy, String sortDir) {
+        // Sıralama yönünü belirle
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? 
+                Sort.by(sortBy).ascending() : 
+                Sort.by(sortBy).descending();
+        
+        // Sayfalama nesnesi oluştur
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        
+        // Veritabanından sayfalanmış veriyi al
+        Page<CorporateCustomer> customerPage = repository.findAll(pageable);
+        
+        // Entity'leri DTO'lara dönüştür
+        List<CorporateCustomerResponse> content = mapper.toResponseList(customerPage.getContent());
+        
+        // Sayfalama yanıtını oluştur
+        PagedResponse<CorporateCustomerResponse> pagedResponse = new PagedResponse<>();
+        pagedResponse.setContent(content);
+        pagedResponse.setPageNo(customerPage.getNumber());
+        pagedResponse.setPageSize(customerPage.getSize());
+        pagedResponse.setTotalElements(customerPage.getTotalElements());
+        pagedResponse.setTotalPages(customerPage.getTotalPages());
+        pagedResponse.setLast(customerPage.isLast());
+        pagedResponse.setFirst(customerPage.isFirst());
+        pagedResponse.setEmpty(customerPage.isEmpty());
+        pagedResponse.setNumberOfElements(customerPage.getNumberOfElements());
+        pagedResponse.setHasNext(customerPage.hasNext());
+        pagedResponse.setHasPrevious(customerPage.hasPrevious());
+        
+        return pagedResponse;
+    }
+    
+    @Override
     public CorporateCustomerResponse getDtoById(Long id) {
         rules.checkIfCorporateCustomerExists(id);
         CorporateCustomer customer = repository.findById(id)
@@ -127,5 +165,11 @@ public class CorporateCustomerManager extends BaseService<CorporateCustomer, ICo
         customer = repository.save(customer);
         
         return mapper.toResponse(customer);
+    }
+    
+    @Override
+    public void delete(Long id) {
+        rules.checkIfCorporateCustomerExists(id);
+        repository.deleteById(id);
     }
 } 

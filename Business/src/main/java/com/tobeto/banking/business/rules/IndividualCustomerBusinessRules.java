@@ -2,7 +2,7 @@ package com.tobeto.banking.business.rules;
 
 import com.tobeto.banking.business.constants.CustomerMessages;
 import com.tobeto.banking.core.crosscuttingconcerns.exceptions.types.BusinessException;
-import com.tobeto.banking.repositories.abstracts.IIndividualCustomerRepository;
+import com.tobeto.banking.repositories.abstracts.IndividualCustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.time.Period;
 @RequiredArgsConstructor
 public class IndividualCustomerBusinessRules {
     
-    private final IIndividualCustomerRepository individualCustomerRepository;
+    private final IndividualCustomerRepository individualCustomerRepository;
     private final CustomerBusinessRules customerBusinessRules;
     
     /**
@@ -35,7 +35,7 @@ public class IndividualCustomerBusinessRules {
      */
     public void checkIfIdentityNumberExists(String identityNumber) {
         if (individualCustomerRepository.findByIdentityNumber(identityNumber).isPresent()) {
-            throw new BusinessException(CustomerMessages.INDIVIDUAL_CUSTOMER_ALREADY_EXISTS);
+            throw new BusinessException(CustomerMessages.IDENTITY_NUMBER_ALREADY_EXISTS);
         }
     }
     
@@ -45,7 +45,7 @@ public class IndividualCustomerBusinessRules {
      */
     public void checkIfEmailExists(String email) {
         if (individualCustomerRepository.findByEmail(email).isPresent()) {
-            throw new BusinessException(CustomerMessages.CUSTOMER_ALREADY_EXISTS);
+            throw new BusinessException(CustomerMessages.EMAIL_ALREADY_EXISTS);
         }
     }
     
@@ -93,18 +93,18 @@ public class IndividualCustomerBusinessRules {
      */
     public void checkIfBirthDateValid(LocalDate birthDate) {
         if (birthDate == null) {
-            throw new BusinessException("Doğum tarihi boş olamaz");
+            throw new BusinessException(CustomerMessages.INVALID_BIRTH_DATE);
         }
         
         // Doğum tarihi bugünden önce olmalıdır
         if (birthDate.isAfter(LocalDate.now())) {
-            throw new BusinessException("Doğum tarihi gelecekte olamaz");
+            throw new BusinessException(CustomerMessages.INVALID_BIRTH_DATE);
         }
         
         // Yaş kontrolü (18 yaşından büyük olmalı)
         int age = Period.between(birthDate, LocalDate.now()).getYears();
         if (age < 18) {
-            throw new BusinessException("Müşteri 18 yaşından büyük olmalıdır");
+            throw new BusinessException(CustomerMessages.INVALID_BIRTH_DATE);
         }
     }
     

@@ -3,6 +3,7 @@ package com.tobeto.banking.business.abstracts;
 import com.tobeto.banking.business.dtos.requests.CreateIndividualCustomerRequest;
 import com.tobeto.banking.business.dtos.requests.UpdateIndividualCustomerRequest;
 import com.tobeto.banking.business.dtos.responses.IndividualCustomerResponse;
+import com.tobeto.banking.business.dtos.responses.PagedResponse;
 import com.tobeto.banking.core.business.IService;
 import com.tobeto.banking.entities.concretes.IndividualCustomer;
 
@@ -37,25 +38,20 @@ public interface IndividualCustomerService extends IService<IndividualCustomer, 
     List<IndividualCustomer> findByFirstNameAndLastName(String firstName, String lastName);
     
     /**
-     * Belirli bir yaş aralığındaki bireysel müşterileri listeler
-     * @param minAge Minimum yaş
-     * @param maxAge Maksimum yaş
-     * @return Yaş aralığındaki müşteri listesi
-     */
-    List<IndividualCustomer> findByAgeBetween(int minAge, int maxAge);
-    
-    /**
-     * Ad veya soyada göre bireysel müşteri arar (LIKE sorgusu)
-     * @param keyword Aranacak kelime
-     * @return Bulunan müşteri listesi
-     */
-    List<IndividualCustomer> searchByName(String keyword);
-    
-    /**
      * Tüm bireysel müşterileri DTO olarak döner
      * @return Bireysel müşteri DTO listesi
      */
     List<IndividualCustomerResponse> getAllDto();
+    
+    /**
+     * Sayfalanmış bireysel müşteri listesi döner
+     * @param pageNo Sayfa numarası (0 tabanlı)
+     * @param pageSize Sayfa başına öğe sayısı
+     * @param sortBy Sıralama alanı
+     * @param sortDir Sıralama yönü (asc/desc)
+     * @return Sayfalanmış bireysel müşteri listesi
+     */
+    PagedResponse<IndividualCustomerResponse> getAllPaged(int pageNo, int pageSize, String sortBy, String sortDir);
     
     /**
      * ID'ye göre bireysel müşteriyi DTO olarak döner
@@ -77,4 +73,10 @@ public interface IndividualCustomerService extends IService<IndividualCustomer, 
      * @return Güncellenen müşteri yanıtı
      */
     IndividualCustomerResponse updateDto(UpdateIndividualCustomerRequest request);
+    
+    /**
+     * Bireysel müşteriyi siler
+     * @param id Müşteri ID
+     */
+    void delete(Long id);
 } 

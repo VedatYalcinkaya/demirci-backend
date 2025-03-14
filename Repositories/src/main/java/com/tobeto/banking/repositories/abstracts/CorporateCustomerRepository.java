@@ -2,6 +2,8 @@ package com.tobeto.banking.repositories.abstracts;
 
 import com.tobeto.banking.core.data.IRepository;
 import com.tobeto.banking.entities.concretes.CorporateCustomer;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.Optional;
  * CorporateCustomer entity'si için repository arayüzü
  */
 @Repository
-public interface ICorporateCustomerRepository extends IRepository<CorporateCustomer, Long> {
+public interface CorporateCustomerRepository extends IRepository<CorporateCustomer, Long> {
     
     /**
      * Vergi numarasına göre kurumsal müşteri arar
@@ -63,24 +65,27 @@ public interface ICorporateCustomerRepository extends IRepository<CorporateCusto
     List<CorporateCustomer> findByIsActiveTrue();
     
     /**
-     * Şirket adına göre kurumsal müşteri arar
-     * @param keyword Arama kelimesi
+     * Şirket adına göre kurumsal müşteri arar (LIKE sorgusu)
+     * @param keyword Aranacak kelime
      * @return Bulunan müşteri listesi
      */
-    List<CorporateCustomer> searchByCompanyName(String keyword);
+    @Query("SELECT c FROM CorporateCustomer c WHERE LOWER(c.companyName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<CorporateCustomer> searchByCompanyName(@Param("keyword") String keyword);
     
     /**
-     * Kuruluş yılına göre kurumsal müşteri arar
+     * Belirli bir kuruluş yılından sonra kurulmuş şirketleri listeler
      * @param year Kuruluş yılı
      * @return Bulunan müşteri listesi
      */
-    List<CorporateCustomer> findByFoundationYearGreaterThanEqual(int year);
+    @Query("SELECT c FROM CorporateCustomer c WHERE c.foundationYear >= :year")
+    List<CorporateCustomer> findByFoundationYearGreaterThanEqual(@Param("year") int year);
     
     /**
-     * Sektöre ve çalışan sayısına göre kurumsal müşteri arar
+     * Belirli bir sektördeki ve minimum çalışan sayısına sahip şirketleri listeler
      * @param sector Sektör
      * @param minEmployeeCount Minimum çalışan sayısı
      * @return Bulunan müşteri listesi
      */
-    List<CorporateCustomer> findBySectorAndMinEmployeeCount(String sector, int minEmployeeCount);
+    @Query("SELECT c FROM CorporateCustomer c WHERE c.sector = :sector AND c.employeeCount >= :minEmployeeCount")
+    List<CorporateCustomer> findBySectorAndMinEmployeeCount(@Param("sector") String sector, @Param("minEmployeeCount") int minEmployeeCount);
 } 

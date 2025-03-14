@@ -3,6 +3,8 @@ package com.tobeto.banking.business.abstracts;
 import com.tobeto.banking.business.dtos.requests.CreateCorporateCustomerRequest;
 import com.tobeto.banking.business.dtos.requests.UpdateCorporateCustomerRequest;
 import com.tobeto.banking.business.dtos.responses.CorporateCustomerResponse;
+import com.tobeto.banking.business.dtos.responses.PagedResponse;
+import com.tobeto.banking.core.business.IService;
 import com.tobeto.banking.entities.concretes.CorporateCustomer;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.Optional;
 /**
  * Kurumsal müşteri servisi arayüzü
  */
-public interface CorporateCustomerService {
+public interface CorporateCustomerService extends IService<CorporateCustomer, Long> {
     
     /**
      * Vergi numarasına göre kurumsal müşteri bulur
@@ -78,6 +80,16 @@ public interface CorporateCustomerService {
     List<CorporateCustomerResponse> getAllDto();
     
     /**
+     * Sayfalanmış kurumsal müşteri listesi döner
+     * @param pageNo Sayfa numarası (0 tabanlı)
+     * @param pageSize Sayfa başına öğe sayısı
+     * @param sortBy Sıralama alanı
+     * @param sortDir Sıralama yönü (asc/desc)
+     * @return Sayfalanmış kurumsal müşteri listesi
+     */
+    PagedResponse<CorporateCustomerResponse> getAllPaged(int pageNo, int pageSize, String sortBy, String sortDir);
+    
+    /**
      * ID'ye göre kurumsal müşteri DTO'sunu getirir
      * @param id Kurumsal müşteri ID
      * @return Kurumsal müşteri DTO
@@ -97,4 +109,10 @@ public interface CorporateCustomerService {
      * @return Güncellenen kurumsal müşteri DTO
      */
     CorporateCustomerResponse updateDto(UpdateCorporateCustomerRequest request);
+    
+    /**
+     * Kurumsal müşteriyi siler
+     * @param id Kurumsal müşteri ID
+     */
+    void delete(Long id);
 } 
