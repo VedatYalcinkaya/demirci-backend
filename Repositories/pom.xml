@@ -4,29 +4,26 @@
     <modelVersion>4.0.0</modelVersion>
     
     <parent>
-        <groupId>com.tobeto.banking</groupId>
-        <artifactId>bank-app-backend</artifactId>
+        <groupId>com.demirciyazilim</groupId>
+        <artifactId>demirci-backend</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>Repositories</artifactId>
-    <name>Repositories</name>
-    <description>Veritabanı erişim katmanı</description>
+    <artifactId>repositories</artifactId>
+    <name>repositories</name>
+    <description>Repositories module for demirciyazilim.com backend</description>
     
     <dependencies>
         <dependency>
-            <groupId>com.tobeto.banking</groupId>
-            <artifactId>Entities</artifactId>
+            <groupId>com.demirciyazilim</groupId>
+            <artifactId>entities</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>

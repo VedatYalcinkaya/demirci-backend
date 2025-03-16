@@ -4,40 +4,44 @@
     <modelVersion>4.0.0</modelVersion>
     
     <parent>
-        <groupId>com.tobeto.banking</groupId>
-        <artifactId>bank-app-backend</artifactId>
+        <groupId>com.demirciyazilim</groupId>
+        <artifactId>demirci-backend</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>WebApi</artifactId>
-    <name>WebApi</name>
-    <description>REST API katmanı</description>
+    <artifactId>webapi</artifactId>
+    <name>webapi</name>
+    <description>Web API module for demirciyazilim.com backend</description>
     
     <dependencies>
         <dependency>
-            <groupId>com.tobeto.banking</groupId>
-            <artifactId>Business</artifactId>
+            <groupId>com.demirciyazilim</groupId>
+            <artifactId>business</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>com.demirciyazilim</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.3.0</version>
         </dependency>
-        
-        <!-- PostgreSQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>

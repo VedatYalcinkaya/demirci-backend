@@ -10,12 +10,20 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     
-    <groupId>com.tobeto.banking</groupId>
-    <artifactId>bank-app-backend</artifactId>
+    <groupId>com.demirciyazilim</groupId>
+    <artifactId>demirci-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>bank-app-backend</name>
-    <description>Modüler Bankacılık Uygulaması</description>
+    <name>demirci-backend</name>
+    <description>Backend for demirciyazilim.com website</description>
+    
+    <modules>
+        <module>core</module>
+        <module>entities</module>
+        <module>repositories</module>
+        <module>business</module>
+        <module>webapi</module>
+    </modules>
     
     <properties>
         <java.version>17</java.version>
@@ -24,38 +32,27 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
-    <modules>
-        <module>Core</module>
-        <module>Entities</module>
-        <module>Repositories</module>
-        <module>Business</module>
-        <module>WebApi</module>
-    </modules>
-    
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
     </dependencies>
-    
-    <dependencyManagement>
-        <dependencies>
-            <!-- Alt modüller için ortak bağımlılıklar burada tanımlanacak -->
-        </dependencies>
-    </dependencyManagement>
     
     <build>
         <plugins>
