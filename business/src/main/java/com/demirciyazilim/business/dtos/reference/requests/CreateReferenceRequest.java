@@ -45,4 +45,4 @@ public class CreateReferenceRequest {
     private String technologies;
     
     private boolean active = true;
-} 
+}

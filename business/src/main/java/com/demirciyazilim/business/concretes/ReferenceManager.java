@@ -30,20 +30,20 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ReferenceManager implements ReferenceService {
-    
+
     private final ReferenceRepository referenceRepository;
     private final ReferenceImageRepository referenceImageRepository;
     private final ReferenceBusinessRules referenceBusinessRules;
     private final ReferenceMapper referenceMapper;
     private final ReferenceImageMapper referenceImageMapper;
-    
+
     @Override
     public DataResult<List<ReferenceResponse>> getAll() {
         List<Reference> references = referenceRepository.findAll(Sort.by(Sort.Direction.DESC, "completionDate"));
         List<ReferenceResponse> responseList = referenceMapper.toResponseList(references);
         return new SuccessDataResult<>(responseList, Messages.REFERENCES_LISTED_SUCCESSFULLY);
     }
-    
+
     @Override
     public DataResult<List<ReferenceResponse>> getAllActive(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "completionDate"));
@@ -51,7 +51,7 @@ public class ReferenceManager implements ReferenceService {
         List<ReferenceResponse> responseList = referenceMapper.toResponseList(result.getContent());
         return new SuccessDataResult<>(responseList, Messages.REFERENCES_LISTED_SUCCESSFULLY);
     }
-    
+
     @Override
     public DataResult<ReferenceResponse> getById(Long id) {
         Optional<Reference> reference = referenceRepository.findById(id);
@@ -61,7 +61,7 @@ public class ReferenceManager implements ReferenceService {
         ReferenceResponse response = referenceMapper.toResponse(reference.get());
         return new SuccessDataResult<>(response, Messages.REFERENCE_FETCHED_SUCCESSFULLY);
     }
-    
+
     @Override
     public DataResult<ReferenceResponse> add(CreateReferenceRequest request) {
         try {
@@ -73,20 +73,40 @@ public class ReferenceManager implements ReferenceService {
             return new ErrorDataResult<>("Referans eklenirken bir hata oluştu: " + e.getMessage());
         }
     }
-    
+
+    // @Override
+    // public DataResult<ReferenceResponse> update(UpdateReferenceRequest request) {
+    // referenceBusinessRules.checkIfReferenceExists(request.getId());
+
+    // Reference reference = referenceMapper.toEntity(request);
+    // Reference existingReference =
+    // referenceRepository.findById(request.getId()).get();
+    // reference.setCreatedAt(existingReference.getCreatedAt());
+
+    // Reference updatedReference = referenceRepository.save(reference);
+    // ReferenceResponse response = referenceMapper.toResponse(updatedReference);
+    // return new SuccessDataResult<>(response,
+    // Messages.REFERENCE_UPDATED_SUCCESSFULLY);
+    // }
+
     @Override
     public DataResult<ReferenceResponse> update(UpdateReferenceRequest request) {
         referenceBusinessRules.checkIfReferenceExists(request.getId());
-        
+
         Reference reference = referenceMapper.toEntity(request);
         Reference existingReference = referenceRepository.findById(request.getId()).get();
+
+        // Mevcut oluşturulma tarihini koru
         reference.setCreatedAt(existingReference.getCreatedAt());
-        
+
+        // Mevcut resimleri koru - bu satırı ekleyin
+        reference.setImages(existingReference.getImages());
+
         Reference updatedReference = referenceRepository.save(reference);
         ReferenceResponse response = referenceMapper.toResponse(updatedReference);
         return new SuccessDataResult<>(response, Messages.REFERENCE_UPDATED_SUCCESSFULLY);
     }
-    
+
     @Override
     @Transactional
     public Result delete(Long id) {
@@ -95,7 +115,7 @@ public class ReferenceManager implements ReferenceService {
         referenceRepository.deleteById(id);
         return new SuccessResult(Messages.REFERENCE_DELETED_SUCCESSFULLY);
     }
-    
+
     @Override
     public Result activate(Long id) {
         referenceBusinessRules.checkIfReferenceExists(id);
@@ -105,7 +125,7 @@ public class ReferenceManager implements ReferenceService {
         referenceRepository.save(reference);
         return new SuccessResult(Messages.REFERENCE_ACTIVATED_SUCCESSFULLY);
     }
-    
+
     @Override
     public Result deactivate(Long id) {
         referenceBusinessRules.checkIfReferenceExists(id);
@@ -115,14 +135,14 @@ public class ReferenceManager implements ReferenceService {
         referenceRepository.save(reference);
         return new SuccessResult(Messages.REFERENCE_DEACTIVATED_SUCCESSFULLY);
     }
-    
+
     @Override
     public DataResult<List<ReferenceResponse>> getLatestReferences(int count) {
         List<Reference> references = referenceRepository.findTop5ByIsActiveTrueOrderByCompletionDateDesc();
         List<ReferenceResponse> responseList = referenceMapper.toResponseList(references);
         return new SuccessDataResult<>(responseList, Messages.REFERENCES_LISTED_SUCCESSFULLY);
     }
-    
+
     @Override
     public DataResult<List<ReferenceResponse>> searchByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "completionDate"));
@@ -130,7 +150,7 @@ public class ReferenceManager implements ReferenceService {
         List<ReferenceResponse> responseList = referenceMapper.toResponseList(result.getContent());
         return new SuccessDataResult<>(responseList, Messages.REFERENCES_LISTED_SUCCESSFULLY);
     }
-    
+
     @Override
     public DataResult<List<ReferenceResponse>> searchByTechnology(String technology, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "completionDate"));
@@ -138,25 +158,25 @@ public class ReferenceManager implements ReferenceService {
         List<ReferenceResponse> responseList = referenceMapper.toResponseList(result.getContent());
         return new SuccessDataResult<>(responseList, Messages.REFERENCES_LISTED_SUCCESSFULLY);
     }
-    
+
     @Override
     public DataResult<ReferenceImageResponse> addImage(Long referenceId, CreateReferenceImageRequest request) {
         referenceBusinessRules.checkIfReferenceExists(referenceId);
-        
+
         Reference reference = referenceRepository.findById(referenceId).get();
         ReferenceImage image = referenceImageMapper.toEntity(request, reference);
         ReferenceImage savedImage = referenceImageRepository.save(image);
         ReferenceImageResponse response = referenceImageMapper.toResponse(savedImage);
         return new SuccessDataResult<>(response, Messages.REFERENCE_IMAGE_ADDED_SUCCESSFULLY);
     }
-    
+
     @Override
     public Result deleteImage(Long imageId) {
         referenceBusinessRules.checkIfReferenceImageExists(imageId);
         referenceImageRepository.deleteById(imageId);
         return new SuccessResult(Messages.REFERENCE_IMAGE_DELETED_SUCCESSFULLY);
     }
-    
+
     @Override
     public DataResult<List<ReferenceImageResponse>> getImagesByReferenceId(Long referenceId) {
         referenceBusinessRules.checkIfReferenceExists(referenceId);
@@ -164,4 +184,4 @@ public class ReferenceManager implements ReferenceService {
         List<ReferenceImageResponse> responseList = referenceImageMapper.toResponseList(images);
         return new SuccessDataResult<>(responseList, Messages.DATA_LISTED_SUCCESSFULLY);
     }
-} 
+}
