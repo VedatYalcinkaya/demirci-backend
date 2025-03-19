@@ -39,4 +39,20 @@ public class CreateBlogRequest {
     private LocalDateTime publishDate;
     
     private boolean active = true;
+    
+    // SEO alanları
+    @Size(min = 3, max = 200, message = "Blog slug değeri 3-200 karakter arasında olmalıdır")
+    private String slug;
+    
+    @Size(max = 100, message = "Meta başlık en fazla 100 karakter olmalıdır")
+    private String metaTitle;
+    
+    @Size(max = 160, message = "Meta açıklama en fazla 160 karakter olmalıdır")
+    private String metaDescription;
+    
+    @Size(max = 200, message = "Meta anahtar kelimeleri en fazla 200 karakter olmalıdır")
+    private String metaKeywords;
+    
+    @Size(max = 255, message = "Canonical URL en fazla 255 karakter olmalıdır")
+    private String canonicalUrl;
 } 

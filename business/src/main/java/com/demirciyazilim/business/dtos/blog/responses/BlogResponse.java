@@ -30,4 +30,11 @@ public class BlogResponse {
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime updatedAt;
+    
+    // SEO alanları
+    private String slug;
+    private String metaTitle;
+    private String metaDescription;
+    private String metaKeywords;
+    private String canonicalUrl;
 } 

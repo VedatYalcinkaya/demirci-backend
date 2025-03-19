@@ -44,6 +44,22 @@ public class Blog extends BaseEntity {
     @Column(length = 200)
     private String tags;
     
+    // SEO alanları
+    @Column(nullable = false, length = 200, unique = true)
+    private String slug = "";
+    
+    @Column(length = 100)
+    private String metaTitle;
+    
+    @Column(length = 160)
+    private String metaDescription;
+    
+    @Column(length = 200)
+    private String metaKeywords;
+    
+    @Column(length = 255)
+    private String canonicalUrl;
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

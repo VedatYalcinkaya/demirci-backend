@@ -12,9 +12,13 @@ public interface BlogService {
     
     DataResult<List<BlogResponse>> getAll();
     
+    DataResult<List<BlogResponse>> getAll(int page, int size);
+    
     DataResult<List<BlogResponse>> getAllActive(int page, int size);
     
     DataResult<BlogResponse> getById(Long id);
+    
+    DataResult<BlogResponse> getBySlug(String slug);
     
     DataResult<BlogResponse> add(CreateBlogRequest createBlogRequest);
     

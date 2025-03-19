@@ -40,6 +40,16 @@ public class BlogManager implements BlogService {
     }
     
     @Override
+    public DataResult<List<BlogResponse>> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Blog> result = blogRepository.findAll(pageable);
+        List<BlogResponse> blogResponses = result.getContent().stream()
+                .map(blogMapper::toResponse)
+                .collect(Collectors.toList());
+        return new SuccessDataResult<>(blogResponses, Messages.BLOGS_LISTED_SUCCESSFULLY);
+    }
+    
+    @Override
     public DataResult<List<BlogResponse>> getAllActive(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Blog> result = blogRepository.findByIsActiveTrue(pageable);
@@ -60,7 +70,36 @@ public class BlogManager implements BlogService {
     }
     
     @Override
+    public DataResult<BlogResponse> getBySlug(String slug) {
+        Optional<Blog> blog = blogRepository.findBySlug(slug);
+        if (blog.isEmpty()) {
+            return new ErrorDataResult<>("Blog bulunamadı: " + slug);
+        }
+        BlogResponse blogResponse = blogMapper.toResponse(blog.get());
+        return new SuccessDataResult<>(blogResponse, Messages.BLOG_FETCHED_SUCCESSFULLY);
+    }
+    
+    @Override
     public DataResult<BlogResponse> add(CreateBlogRequest createBlogRequest) {
+        // Slug kontrolü
+        if (createBlogRequest.getSlug() == null || createBlogRequest.getSlug().isEmpty()) {
+            // Slug yoksa, title'dan otomatik slug oluştur
+            createBlogRequest.setSlug(blogBusinessRules.generateSlug(createBlogRequest.getTitle()));
+        } else {
+            // Slug varsa, benzersiz olup olmadığını kontrol et
+            blogBusinessRules.checkIfSlugExists(createBlogRequest.getSlug());
+        }
+        
+        // Meta title yoksa başlığı kullan
+        if (createBlogRequest.getMetaTitle() == null || createBlogRequest.getMetaTitle().isEmpty()) {
+            createBlogRequest.setMetaTitle(createBlogRequest.getTitle());
+        }
+        
+        // Meta description yoksa summary'yi kullan
+        if (createBlogRequest.getMetaDescription() == null || createBlogRequest.getMetaDescription().isEmpty()) {
+            createBlogRequest.setMetaDescription(createBlogRequest.getSummary());
+        }
+        
         Blog blog = blogMapper.toEntity(createBlogRequest);
         blog.setCreatedAt(LocalDateTime.now());
         blog.setActive(true);
@@ -72,6 +111,26 @@ public class BlogManager implements BlogService {
     @Override
     public DataResult<BlogResponse> update(Long id, UpdateBlogRequest updateBlogRequest) {
         blogBusinessRules.checkIfBlogExists(id);
+        
+        // Slug kontrolü
+        if (updateBlogRequest.getSlug() == null || updateBlogRequest.getSlug().isEmpty()) {
+            // Slug yoksa, title'dan otomatik slug oluştur
+            updateBlogRequest.setSlug(blogBusinessRules.generateSlug(updateBlogRequest.getTitle()));
+        } else {
+            // Slug varsa, aynı ID'li blog haricinde başka bir blog tarafından kullanılıp kullanılmadığını kontrol et
+            blogBusinessRules.checkIfSlugExistsForUpdate(updateBlogRequest.getSlug(), id);
+        }
+        
+        // Meta title yoksa başlığı kullan
+        if (updateBlogRequest.getMetaTitle() == null || updateBlogRequest.getMetaTitle().isEmpty()) {
+            updateBlogRequest.setMetaTitle(updateBlogRequest.getTitle());
+        }
+        
+        // Meta description yoksa summary'yi kullan
+        if (updateBlogRequest.getMetaDescription() == null || updateBlogRequest.getMetaDescription().isEmpty()) {
+            updateBlogRequest.setMetaDescription(updateBlogRequest.getSummary());
+        }
+        
         Blog existingBlog = blogRepository.findById(id).get();
         blogMapper.updateEntityFromRequest(updateBlogRequest, existingBlog);
         existingBlog.setUpdatedAt(LocalDateTime.now());
