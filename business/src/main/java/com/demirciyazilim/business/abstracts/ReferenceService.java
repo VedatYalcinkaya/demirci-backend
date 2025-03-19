@@ -15,6 +15,8 @@ public interface ReferenceService {
     
     DataResult<List<ReferenceResponse>> getAll();
     
+    DataResult<List<ReferenceResponse>> getAll(int page, int size);
+    
     DataResult<List<ReferenceResponse>> getAllActive(int page, int size);
     
     DataResult<ReferenceResponse> getById(Long id);

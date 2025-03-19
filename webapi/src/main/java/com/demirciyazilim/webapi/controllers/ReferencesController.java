@@ -42,6 +42,14 @@ public class ReferencesController {
         return ResponseEntity.ok(referenceService.getAll());
     }
 
+    @GetMapping("/paginated")
+    @Operation(summary = "Get all references with pagination", description = "Returns all references with pagination")
+    public ResponseEntity<DataResult<List<ReferenceResponse>>> getAllPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(referenceService.getAll(page, size));
+    }
+
     @GetMapping("/active")
     @Operation(summary = "Get all active references", description = "Returns all active references with pagination")
     public ResponseEntity<DataResult<List<ReferenceResponse>>> getAllActive(

@@ -21,6 +21,14 @@ public class BlogMapper {
         blog.setAuthor(request.getAuthor());
         blog.setTags(request.getTags());
         blog.setActive(request.isActive());
+        
+        // SEO alanları
+        blog.setSlug(request.getSlug());
+        blog.setMetaTitle(request.getMetaTitle());
+        blog.setMetaDescription(request.getMetaDescription());
+        blog.setMetaKeywords(request.getMetaKeywords());
+        blog.setCanonicalUrl(request.getCanonicalUrl());
+        
         return blog;
     }
     
@@ -34,6 +42,14 @@ public class BlogMapper {
         blog.setAuthor(request.getAuthor());
         blog.setTags(request.getTags());
         blog.setActive(request.isActive());
+        
+        // SEO alanları
+        blog.setSlug(request.getSlug());
+        blog.setMetaTitle(request.getMetaTitle());
+        blog.setMetaDescription(request.getMetaDescription());
+        blog.setMetaKeywords(request.getMetaKeywords());
+        blog.setCanonicalUrl(request.getCanonicalUrl());
+        
         return blog;
     }
 
@@ -49,6 +65,14 @@ public class BlogMapper {
         response.setActive(entity.isActive());
         response.setCreatedAt(entity.getCreatedAt());
         response.setUpdatedAt(entity.getUpdatedAt());
+        
+        // SEO alanları
+        response.setSlug(entity.getSlug());
+        response.setMetaTitle(entity.getMetaTitle());
+        response.setMetaDescription(entity.getMetaDescription());
+        response.setMetaKeywords(entity.getMetaKeywords());
+        response.setCanonicalUrl(entity.getCanonicalUrl());
+        
         return response;
     }
 
@@ -66,5 +90,12 @@ public class BlogMapper {
         entity.setAuthor(request.getAuthor());
         entity.setTags(request.getTags());
         entity.setActive(request.isActive());
+        
+        // SEO alanları
+        entity.setSlug(request.getSlug());
+        entity.setMetaTitle(request.getMetaTitle());
+        entity.setMetaDescription(request.getMetaDescription());
+        entity.setMetaKeywords(request.getMetaKeywords());
+        entity.setCanonicalUrl(request.getCanonicalUrl());
     }
 } 

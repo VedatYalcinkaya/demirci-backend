@@ -45,6 +45,14 @@ public class ReferenceManager implements ReferenceService {
     }
 
     @Override
+    public DataResult<List<ReferenceResponse>> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "completionDate"));
+        Page<Reference> result = referenceRepository.findAll(pageable);
+        List<ReferenceResponse> responseList = referenceMapper.toResponseList(result.getContent());
+        return new SuccessDataResult<>(responseList, Messages.REFERENCES_LISTED_SUCCESSFULLY);
+    }
+
+    @Override
     public DataResult<List<ReferenceResponse>> getAllActive(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "completionDate"));
         Page<Reference> result = referenceRepository.findByIsActiveTrue(pageable);
