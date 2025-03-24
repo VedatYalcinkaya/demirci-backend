@@ -16,9 +16,9 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
     
     List<Blog> findTop5ByIsActiveTrueOrderByCreatedAtDesc();
     
-    Page<Blog> findByTitleContainingAndIsActiveTrue(String title, Pageable pageable);
+    Page<Blog> findByTitleContainingIgnoreCaseAndIsActiveTrue(String title, Pageable pageable);
     
-    Page<Blog> findByTagsContainingAndIsActiveTrue(String tag, Pageable pageable);
+    Page<Blog> findByTagsContainingIgnoreCaseAndIsActiveTrue(String tag, Pageable pageable);
     
     // SEO için slug ile ilgili metotlar
     Optional<Blog> findBySlug(String slug);
