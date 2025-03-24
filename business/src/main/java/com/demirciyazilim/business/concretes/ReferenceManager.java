@@ -154,7 +154,7 @@ public class ReferenceManager implements ReferenceService {
     @Override
     public DataResult<List<ReferenceResponse>> searchByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "completionDate"));
-        Page<Reference> result = referenceRepository.findByTitleContainingAndIsActiveTrue(title, pageable);
+        Page<Reference> result = referenceRepository.findByTitleContainingIgnoreCaseAndIsActiveTrue(title, pageable);
         List<ReferenceResponse> responseList = referenceMapper.toResponseList(result.getContent());
         return new SuccessDataResult<>(responseList, Messages.REFERENCES_LISTED_SUCCESSFULLY);
     }
@@ -162,7 +162,7 @@ public class ReferenceManager implements ReferenceService {
     @Override
     public DataResult<List<ReferenceResponse>> searchByTechnology(String technology, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "completionDate"));
-        Page<Reference> result = referenceRepository.findByTechnologiesContainingAndIsActiveTrue(technology, pageable);
+        Page<Reference> result = referenceRepository.findByTechnologiesContainingIgnoreCaseAndIsActiveTrue(technology, pageable);
         List<ReferenceResponse> responseList = referenceMapper.toResponseList(result.getContent());
         return new SuccessDataResult<>(responseList, Messages.REFERENCES_LISTED_SUCCESSFULLY);
     }

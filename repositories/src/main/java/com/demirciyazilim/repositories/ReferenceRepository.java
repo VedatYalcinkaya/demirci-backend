@@ -15,7 +15,7 @@ public interface ReferenceRepository extends JpaRepository<Reference, Long> {
     
     List<Reference> findTop5ByIsActiveTrueOrderByCompletionDateDesc();
     
-    Page<Reference> findByTitleContainingAndIsActiveTrue(String title, Pageable pageable);
+    Page<Reference> findByTitleContainingIgnoreCaseAndIsActiveTrue(String title, Pageable pageable);
     
-    Page<Reference> findByTechnologiesContainingAndIsActiveTrue(String technology, Pageable pageable);
+    Page<Reference> findByTechnologiesContainingIgnoreCaseAndIsActiveTrue(String technology, Pageable pageable);
 } 

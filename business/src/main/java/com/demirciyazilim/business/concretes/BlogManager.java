@@ -178,7 +178,7 @@ public class BlogManager implements BlogService {
     @Override
     public DataResult<List<BlogResponse>> searchByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Blog> result = blogRepository.findByTitleContainingAndIsActiveTrue(title, pageable);
+        Page<Blog> result = blogRepository.findByTitleContainingIgnoreCaseAndIsActiveTrue(title, pageable);
         List<BlogResponse> blogResponses = result.getContent().stream()
                 .map(blogMapper::toResponse)
                 .collect(Collectors.toList());
@@ -188,7 +188,7 @@ public class BlogManager implements BlogService {
     @Override
     public DataResult<List<BlogResponse>> searchByTag(String tag, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Blog> result = blogRepository.findByTagsContainingAndIsActiveTrue(tag, pageable);
+        Page<Blog> result = blogRepository.findByTagsContainingIgnoreCaseAndIsActiveTrue(tag, pageable);
         List<BlogResponse> blogResponses = result.getContent().stream()
                 .map(blogMapper::toResponse)
                 .collect(Collectors.toList());
