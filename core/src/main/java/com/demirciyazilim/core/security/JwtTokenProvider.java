@@ -13,6 +13,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -24,8 +25,11 @@ public class JwtTokenProvider {
 
     @Value("${app.jwt.expiration-milliseconds}")
     private long jwtExpirationInMs;
+    
+    @Value("${app.jwt.refresh-expiration-milliseconds}")
+    private long refreshTokenExpirationInMs;
 
-    // Token oluşturma
+    // Access Token oluşturma
     public String generateToken(String username, String role) {
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + jwtExpirationInMs);
@@ -41,12 +45,33 @@ public class JwtTokenProvider {
                 .signWith(key())
                 .compact();
     }
+    
+    // Refresh Token oluşturma
+    public String generateRefreshToken(String username) {
+        Date currentDate = new Date();
+        Date expireDate = new Date(currentDate.getTime() + refreshTokenExpirationInMs);
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setId(UUID.randomUUID().toString())
+                .setIssuedAt(currentDate)
+                .setExpiration(expireDate)
+                .signWith(key())
+                .compact();
+    }
 
     // Security için kimlik doğrulama objesinden token oluşturma
     public String generateToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
         
         return generateToken(userPrincipal.getUsername(), userPrincipal.getAuthorities().iterator().next().getAuthority());
+    }
+    
+    // Authentication objesinden refresh token oluşturma
+    public String generateRefreshToken(Authentication authentication) {
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        
+        return generateRefreshToken(userPrincipal.getUsername());
     }
 
     private Key key() {
@@ -95,6 +120,11 @@ public class JwtTokenProvider {
         }
 
         return false;
+    }
+    
+    // Refresh token geçerlilik kontrolü
+    public boolean validateRefreshToken(String token) {
+        return validateToken(token);
     }
     
     // Token süresinin dolup dolmadığını kontrol eder

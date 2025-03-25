@@ -2,6 +2,8 @@ package com.demirciyazilim.webapi.controllers;
 
 import com.demirciyazilim.business.abstracts.AuthService;
 import com.demirciyazilim.business.dtos.auth.requests.LoginRequest;
+import com.demirciyazilim.business.dtos.auth.requests.LogoutRequest;
+import com.demirciyazilim.business.dtos.auth.requests.RefreshTokenRequest;
 import com.demirciyazilim.business.dtos.auth.responses.JwtAuthResponse;
 import com.demirciyazilim.business.dtos.user.requests.CreateUserRequest;
 import com.demirciyazilim.core.utilities.results.DataResult;
@@ -62,5 +64,32 @@ public class AuthController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorDataResult<>("Token 'Bearer {token}' formatında olmalıdır"));
+    }
+    
+    @PostMapping("/refresh")
+    @Operation(
+        summary = "Token yenileme", 
+        description = "Refresh token kullanarak yeni bir erişim token'ı oluşturur"
+    )
+    public ResponseEntity<DataResult<JwtAuthResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        DataResult<JwtAuthResponse> result = authService.refreshToken(refreshTokenRequest);
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(result);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+    
+    @PostMapping("/logout")
+    @Operation(
+        summary = "Çıkış yapma", 
+        description = "Kullanıcı oturumunu sonlandırır ve refresh token'ı geçersiz kılar",
+        security = @SecurityRequirement(name = "bearer-key")
+    )
+    public ResponseEntity<Result> logout(@Valid @RequestBody LogoutRequest logoutRequest) {
+        Result result = authService.logout(logoutRequest.getRefreshToken());
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(result);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 } 
