@@ -1,8 +1,10 @@
 package com.demirciyazilim.business.concretes;
 
 import com.demirciyazilim.business.abstracts.AuthService;
+import com.demirciyazilim.business.abstracts.RefreshTokenService;
 import com.demirciyazilim.business.constants.Messages;
 import com.demirciyazilim.business.dtos.auth.requests.LoginRequest;
+import com.demirciyazilim.business.dtos.auth.requests.RefreshTokenRequest;
 import com.demirciyazilim.business.dtos.auth.responses.JwtAuthResponse;
 import com.demirciyazilim.business.dtos.user.requests.CreateUserRequest;
 import com.demirciyazilim.business.rules.UserBusinessRules;
@@ -12,6 +14,8 @@ import com.demirciyazilim.core.utilities.results.DataResult;
 import com.demirciyazilim.core.utilities.results.ErrorDataResult;
 import com.demirciyazilim.core.utilities.results.Result;
 import com.demirciyazilim.core.utilities.results.SuccessDataResult;
+import com.demirciyazilim.core.utilities.results.SuccessResult;
+import com.demirciyazilim.entities.RefreshToken;
 import com.demirciyazilim.entities.User;
 import com.demirciyazilim.entities.enums.Role;
 import com.demirciyazilim.repositories.UserRepository;
@@ -34,6 +38,7 @@ public class AuthManager implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final UserBusinessRules userBusinessRules;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public DataResult<JwtAuthResponse> login(LoginRequest loginRequest) {
@@ -57,12 +62,14 @@ public class AuthManager implements AuthService {
             user.setLastLogin(LocalDateTime.now());
             userRepository.save(user);
 
-            // JWT oluşturma
+            // JWT ve refresh token oluşturma
             String token = tokenProvider.generateToken(authentication);
+            String refreshToken = createRefreshTokenForUser(user);
             
             // Yanıt oluşturma
             JwtAuthResponse response = JwtAuthResponse.builder()
                     .accessToken(token)
+                    .refreshToken(refreshToken)
                     .userId(user.getId())
                     .username(user.getUsername())
                     .email(user.getEmail())
@@ -112,12 +119,14 @@ public class AuthManager implements AuthService {
             // Kullanıcıyı kaydetme
             User savedUser = userRepository.save(user);
 
-            // JWT oluşturma
+            // JWT ve refresh token oluşturma
             String token = tokenProvider.generateToken(savedUser.getUsername(), savedUser.getRole().name());
+            String refreshToken = createRefreshTokenForUser(savedUser);
             
             // Yanıt oluşturma
             JwtAuthResponse response = JwtAuthResponse.builder()
                     .accessToken(token)
+                    .refreshToken(refreshToken)
                     .userId(savedUser.getId())
                     .username(savedUser.getUsername())
                     .email(savedUser.getEmail())
@@ -137,5 +146,55 @@ public class AuthManager implements AuthService {
         return tokenProvider.validateToken(token) 
                 ? new SuccessDataResult<>("Token geçerli") 
                 : new ErrorDataResult<>("Token geçersiz");
+    }
+    
+    @Override
+    public DataResult<JwtAuthResponse> refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        try {
+            // Refresh token doğrulama
+            DataResult<RefreshToken> tokenResult = refreshTokenService.findByToken(refreshTokenRequest.getRefreshToken());
+            if (!tokenResult.isSuccess()) {
+                return new ErrorDataResult<>(tokenResult.getMessage());
+            }
+            
+            RefreshToken refreshToken = tokenResult.getData();
+            
+            // Refresh token'ın geçerliliğini kontrol et
+            DataResult<RefreshToken> verificationResult = refreshTokenService.verifyExpiration(refreshToken);
+            if (!verificationResult.isSuccess()) {
+                return new ErrorDataResult<>(verificationResult.getMessage());
+            }
+            
+            // Kullanıcıyı al
+            User user = refreshToken.getUser();
+            
+            // Yeni JWT token oluştur
+            String accessToken = tokenProvider.generateToken(user.getUsername(), user.getRole().name());
+            
+            // Yanıt oluştur
+            JwtAuthResponse response = JwtAuthResponse.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken.getToken()) // Aynı refresh token'ı kullan
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .role(user.getRole().name())
+                    .build();
+            
+            return new SuccessDataResult<>(response, "Token başarıyla yenilendi");
+        } catch (Exception e) {
+            return new ErrorDataResult<>("Token yenileme başarısız: " + e.getMessage());
+        }
+    }
+    
+    @Override
+    public Result logout(String refreshToken) {
+        return refreshTokenService.revokeToken(refreshToken);
+    }
+    
+    // Kullanıcı için refresh token oluşturma yardımcı metodu
+    private String createRefreshTokenForUser(User user) {
+        DataResult<RefreshToken> refreshTokenResult = refreshTokenService.createRefreshToken(user);
+        return refreshTokenResult.getData().getToken();
     }
 } 
