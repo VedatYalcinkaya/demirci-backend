@@ -2,7 +2,6 @@ package com.demirciyazilim.business.rules;
 
 import com.demirciyazilim.business.constants.Messages;
 import com.demirciyazilim.core.utilities.exceptions.BusinessException;
-import com.demirciyazilim.entities.Blog;
 import com.demirciyazilim.repositories.BlogRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

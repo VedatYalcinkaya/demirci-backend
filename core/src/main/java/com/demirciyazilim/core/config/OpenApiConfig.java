@@ -1,4 +1,4 @@
-package com.demirciyazilim.webapi.config;
+package com.demirciyazilim.core.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -40,4 +40,4 @@ public class OpenApiConfig {
                                         .scheme("bearer")
                                         .bearerFormat("JWT")));
     }
-}
+} 

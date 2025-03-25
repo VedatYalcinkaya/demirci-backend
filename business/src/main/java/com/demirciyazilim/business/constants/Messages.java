@@ -109,4 +109,15 @@ public class Messages {
     public static final String CONTENT_BLOCK_TITLE_EMPTY = "İçerik bloğu başlığı boş olamaz";
     public static final String CONTENT_BLOCK_TITLE_MIN_LENGTH = "İçerik bloğu başlığı en az 3 karakter olmalıdır";
     public static final String CONTENT_BLOCK_TITLE_MAX_LENGTH = "İçerik bloğu başlığı en fazla 100 karakter olmalıdır";
+    
+    // Kullanıcı doğrulama mesajları
+    public static final String OLD_PASSWORD_NOT_MATCH = "Eski şifre doğru değil";
+    public static final String LAST_LOGIN_UPDATED_SUCCESSFULLY = "Son giriş tarihi başarıyla güncellendi";
+    
+    // Kimlik doğrulama mesajları
+    public static final String LOGIN_SUCCESS = "Giriş başarılı";
+    public static final String LOGIN_FAILED = "Giriş başarısız";
+    public static final String REGISTER_SUCCESS = "Kayıt başarılı";
+    public static final String REGISTER_FAILED = "Kayıt başarısız";
+    public static final String UNAUTHORIZED = "Bu işlemi yapmak için yetkiniz yok";
 } 

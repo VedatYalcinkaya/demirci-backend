@@ -3,7 +3,6 @@ package com.demirciyazilim.business.abstracts;
 import com.demirciyazilim.business.dtos.reference.requests.CreateReferenceRequest;
 import com.demirciyazilim.business.dtos.reference.requests.CreateReferenceImageRequest;
 import com.demirciyazilim.business.dtos.reference.requests.UpdateReferenceRequest;
-import com.demirciyazilim.business.dtos.reference.requests.UpdateReferenceImageRequest;
 import com.demirciyazilim.business.dtos.reference.responses.ReferenceResponse;
 import com.demirciyazilim.business.dtos.reference.responses.ReferenceImageResponse;
 import com.demirciyazilim.core.utilities.results.DataResult;
