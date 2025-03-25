@@ -2,8 +2,6 @@ package com.demirciyazilim.business.rules;
 
 import com.demirciyazilim.business.constants.Messages;
 import com.demirciyazilim.core.utilities.exceptions.BusinessException;
-import com.demirciyazilim.entities.Reference;
-import com.demirciyazilim.entities.ReferenceImage;
 import com.demirciyazilim.repositories.ReferenceImageRepository;
 import com.demirciyazilim.repositories.ReferenceRepository;
 import lombok.AllArgsConstructor;

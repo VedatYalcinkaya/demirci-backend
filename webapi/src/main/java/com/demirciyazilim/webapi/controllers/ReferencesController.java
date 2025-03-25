@@ -26,6 +26,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/api/v1/references")
@@ -93,7 +95,12 @@ public class ReferencesController {
     }
 
     @PostMapping
-    @Operation(summary = "Add reference", description = "Adds a new reference")
+    @Operation(
+        summary = "Referans ekle", 
+        description = "Yeni bir referans ekler",
+        security = @SecurityRequirement(name = "bearer-key")
+    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<DataResult<ReferenceResponse>> add(@Valid @RequestBody CreateReferenceRequest request) {
         DataResult<ReferenceResponse> result = referenceService.add(request);
         if (result.isSuccess()) {
@@ -103,7 +110,12 @@ public class ReferencesController {
     }
 
     @PutMapping
-    @Operation(summary = "Update reference", description = "Updates an existing reference")
+    @Operation(
+        summary = "Referans güncelle", 
+        description = "Var olan bir referansı günceller",
+        security = @SecurityRequirement(name = "bearer-key")
+    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<DataResult<ReferenceResponse>> update(@Valid @RequestBody UpdateReferenceRequest request) {
         DataResult<ReferenceResponse> result = referenceService.update(request);
         if (result.isSuccess()) {
@@ -113,7 +125,12 @@ public class ReferencesController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete reference", description = "Deletes a reference by id")
+    @Operation(
+        summary = "Referans sil", 
+        description = "Belirtilen ID'ye sahip referansı siler",
+        security = @SecurityRequirement(name = "bearer-key")
+    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<Result> delete(@PathVariable Long id) {
         Result result = referenceService.delete(id);
         if (result.isSuccess()) {
@@ -123,7 +140,12 @@ public class ReferencesController {
     }
 
     @PatchMapping("/activate/{id}")
-    @Operation(summary = "Activate reference", description = "Activates a reference by id")
+    @Operation(
+        summary = "Referans aktifleştir", 
+        description = "Belirtilen ID'ye sahip referansı aktifleştirir",
+        security = @SecurityRequirement(name = "bearer-key")
+    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<Result> activate(@PathVariable Long id) {
         Result result = referenceService.activate(id);
         if (result.isSuccess()) {
@@ -133,7 +155,12 @@ public class ReferencesController {
     }
 
     @PatchMapping("/deactivate/{id}")
-    @Operation(summary = "Deactivate reference", description = "Deactivates a reference by id")
+    @Operation(
+        summary = "Referans deaktifleştir", 
+        description = "Belirtilen ID'ye sahip referansı deaktifleştirir",
+        security = @SecurityRequirement(name = "bearer-key")
+    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<Result> deactivate(@PathVariable Long id) {
         Result result = referenceService.deactivate(id);
         if (result.isSuccess()) {
@@ -149,7 +176,12 @@ public class ReferencesController {
     }
 
     @PostMapping("/{referenceId}/images")
-    @Operation(summary = "Add image to reference", description = "Adds a new image to reference")
+    @Operation(
+        summary = "Referansa resim ekle", 
+        description = "Referansa yeni bir resim ekler",
+        security = @SecurityRequirement(name = "bearer-key")
+    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<DataResult<ReferenceImageResponse>> addImage(
             @PathVariable Long referenceId,
             @Valid @RequestBody CreateReferenceImageRequest request) {
@@ -166,8 +198,10 @@ public class ReferencesController {
         description = "Cloudinary'ye resim yükler ve referansa ekler",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-        )
+        ),
+        security = @SecurityRequirement(name = "bearer-key")
     )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<DataResult<ReferenceImageResponse>> uploadAndAddImage(
             @PathVariable Long referenceId,
             @Parameter(description = "Yüklenecek dosya", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
@@ -201,7 +235,12 @@ public class ReferencesController {
     }
 
     @DeleteMapping("/images/{imageId}")
-    @Operation(summary = "Delete image", description = "Deletes an image by id")
+    @Operation(
+        summary = "Resim sil", 
+        description = "Belirtilen ID'ye sahip resmi siler",
+        security = @SecurityRequirement(name = "bearer-key")
+    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<Result> deleteImage(@PathVariable Long imageId) {
         Result result = referenceService.deleteImage(imageId);
         if (result.isSuccess()) {
@@ -216,8 +255,10 @@ public class ReferencesController {
         description = "Cloudinary'ye referans küçük resmi (thumbnail) yükler",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-        )
+        ),
+        security = @SecurityRequirement(name = "bearer-key")
     )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<DataResult<String>> uploadThumbnail(
             @Parameter(description = "Yüklenecek dosya", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam("file") MultipartFile file) {
@@ -234,8 +275,10 @@ public class ReferencesController {
         description = "Cloudinary'ye müşteri logosu yükler",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-        )
+        ),
+        security = @SecurityRequirement(name = "bearer-key")
     )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<DataResult<String>> uploadClientLogo(
             @Parameter(description = "Yüklenecek dosya", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam("file") MultipartFile file) {
@@ -252,8 +295,10 @@ public class ReferencesController {
         description = "Thumbnail ve client logo dosyalarını yükleyerek referans oluşturur",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-        )
+        ),
+        security = @SecurityRequirement(name = "bearer-key")
     )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<DataResult<ReferenceResponse>> createWithFiles(
             @Parameter(description = "Referans bilgileri (JSON formatında)", required = true)
             @RequestParam("referenceData") String referenceDataJson,
@@ -310,8 +355,10 @@ public class ReferencesController {
         description = "Thumbnail ve client logo dosyalarını yükleyerek referans günceller",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-        )
+        ),
+        security = @SecurityRequirement(name = "bearer-key")
     )
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<DataResult<ReferenceResponse>> updateWithFiles(
             @Parameter(description = "Referans bilgileri (JSON formatında)", required = true)
             @RequestParam("referenceData") String referenceDataJson,
