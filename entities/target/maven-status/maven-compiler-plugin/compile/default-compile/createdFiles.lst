@@ -1,8 +1,0 @@
-com\demirciyazilim\entities\ContentBlock.class
-com\demirciyazilim\entities\Blog.class
-com\demirciyazilim\entities\enums\Role.class
-com\demirciyazilim\entities\RefreshToken$RefreshTokenBuilder.class
-com\demirciyazilim\entities\Reference.class
-com\demirciyazilim\entities\RefreshToken.class
-com\demirciyazilim\entities\ReferenceImage.class
-com\demirciyazilim\entities\User.class
