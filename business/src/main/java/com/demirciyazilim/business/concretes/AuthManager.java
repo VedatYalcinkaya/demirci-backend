@@ -6,6 +6,7 @@ import com.demirciyazilim.business.constants.Messages;
 import com.demirciyazilim.business.dtos.auth.requests.LoginRequest;
 import com.demirciyazilim.business.dtos.auth.requests.RefreshTokenRequest;
 import com.demirciyazilim.business.dtos.auth.responses.JwtAuthResponse;
+import com.demirciyazilim.business.dtos.auth.responses.UserInfoResponse;
 import com.demirciyazilim.business.dtos.user.requests.CreateUserRequest;
 import com.demirciyazilim.business.rules.UserBusinessRules;
 import com.demirciyazilim.core.security.JwtTokenProvider;
@@ -142,10 +143,36 @@ public class AuthManager implements AuthService {
     }
     
     @Override
-    public Result validateToken(String token) {
-        return tokenProvider.validateToken(token) 
-                ? new SuccessDataResult<>("Token geçerli") 
-                : new ErrorDataResult<>("Token geçersiz");
+    public DataResult<UserInfoResponse> validateToken(String token) {
+        // Token geçerliliğini kontrol et
+        if (!tokenProvider.validateToken(token)) {
+            return new ErrorDataResult<>(null, "Token geçersiz");
+        }
+        
+        try {
+            // Token'dan kullanıcı adını çıkar
+            String username = tokenProvider.getUsername(token);
+            
+            // Kullanıcıyı bul
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new BusinessException("Kullanıcı bulunamadı"));
+            
+            // Kullanıcı bilgilerini oluştur
+            UserInfoResponse userInfo = UserInfoResponse.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .fullName(user.getFullName())
+                    .role(user.getRole().name())
+                    .active(user.isActive())
+                    .lastLogin(user.getLastLogin())
+                    .createdAt(user.getCreatedAt())
+                    .build();
+            
+            return new SuccessDataResult<>(userInfo, "Token geçerli");
+        } catch (Exception e) {
+            return new ErrorDataResult<>(null, "Token doğrulama hatası: " + e.getMessage());
+        }
     }
     
     @Override
