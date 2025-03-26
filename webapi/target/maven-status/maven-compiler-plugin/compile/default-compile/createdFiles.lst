@@ -1,0 +1,9 @@
+com\demirciyazilim\webapi\DemirciBackendApplication.class
+com\demirciyazilim\webapi\controllers\ContactController.class
+com\demirciyazilim\webapi\models\ChangePasswordRequest.class
+com\demirciyazilim\webapi\controllers\AuthController.class
+com\demirciyazilim\webapi\controllers\BlogsController.class
+com\demirciyazilim\webapi\controllers\FileController.class
+com\demirciyazilim\webapi\controllers\ContentBlocksController.class
+com\demirciyazilim\webapi\controllers\UsersController.class
+com\demirciyazilim\webapi\controllers\ReferencesController.class

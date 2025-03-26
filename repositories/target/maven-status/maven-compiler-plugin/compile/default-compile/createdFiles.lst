@@ -1,0 +1,6 @@
+com\demirciyazilim\repositories\RefreshTokenRepository.class
+com\demirciyazilim\repositories\ReferenceRepository.class
+com\demirciyazilim\repositories\ReferenceImageRepository.class
+com\demirciyazilim\repositories\BlogRepository.class
+com\demirciyazilim\repositories\ContentBlockRepository.class
+com\demirciyazilim\repositories\UserRepository.class
