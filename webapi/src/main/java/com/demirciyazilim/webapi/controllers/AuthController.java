@@ -5,6 +5,7 @@ import com.demirciyazilim.business.dtos.auth.requests.LoginRequest;
 import com.demirciyazilim.business.dtos.auth.requests.LogoutRequest;
 import com.demirciyazilim.business.dtos.auth.requests.RefreshTokenRequest;
 import com.demirciyazilim.business.dtos.auth.responses.JwtAuthResponse;
+import com.demirciyazilim.business.dtos.auth.responses.UserInfoResponse;
 import com.demirciyazilim.business.dtos.user.requests.CreateUserRequest;
 import com.demirciyazilim.core.utilities.results.DataResult;
 import com.demirciyazilim.core.utilities.results.ErrorDataResult;
@@ -50,13 +51,13 @@ public class AuthController {
     @GetMapping("/validate")
     @Operation(
         summary = "Token doğrulama", 
-        description = "JWT token'ın geçerliliğini kontrol eder. Token'ı 'Bearer {token}' formatında gönderin.",
+        description = "JWT token'ın geçerliliğini kontrol eder ve kullanıcı bilgilerini döndürür. Token'ı 'Bearer {token}' formatında gönderin.",
         security = @SecurityRequirement(name = "bearer-key")
     )
-    public ResponseEntity<Result> validateToken(@RequestHeader(name = "Authorization", required = true) String bearerToken) {
+    public ResponseEntity<DataResult<UserInfoResponse>> validateToken(@RequestHeader(name = "Authorization", required = true) String bearerToken) {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             String token = bearerToken.substring(7);
-            Result result = authService.validateToken(token);
+            DataResult<UserInfoResponse> result = authService.validateToken(token);
             if (result.isSuccess()) {
                 return ResponseEntity.ok(result);
             }
