@@ -1,6 +1,11 @@
 ### Maven ###
 target/
-!.mvn/wrapper/maven-wrapper.jar
+# Maven wrapper dosyalarını tamamen yok sayalım
+.mvn/
+mvnw
+mvnw.cmd
+# Aşağıdaki yorum satırı haline getiriliyor
+# !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 *.jar
