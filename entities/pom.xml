@@ -30,9 +30,15 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+<<<<<<< HEAD
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>9.2.0</version>
+=======
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+>>>>>>> bef37f4c50301407befa3abd7a7517d65c53a178
         </dependency>
     </dependencies>
     
