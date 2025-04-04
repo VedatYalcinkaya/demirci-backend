@@ -60,11 +60,24 @@ logs/
 *.swp
 
 ### Uygulama özellikleri ve gizli değerler ###
-application-dev.properties
-application-dev.yml
+# Üretim yapılandırmasını hariç tut
 application-prod.properties
 application-prod.yml
+
+# Tüm application-* dosyalarını hariç tut ama aşağıdakileri dahil et
 **/application-*.properties
 **/application-*.yml
+
+# Ana uygulama dosyalarını dahil et
 !**/src/main/resources/application.properties
-!**/src/main/resources/application.yml 
+!**/src/main/resources/application.yml
+
+# Geliştirme dosyasını dahil et
+!**/src/main/resources/application-dev.properties
+!**/src/main/resources/application-dev.yml
+
+# Environment Variables
+.env
+
+# Eski yapılandırma - artık kullanılmıyor
+application-secrets.properties 
